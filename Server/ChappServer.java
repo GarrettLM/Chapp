@@ -6,8 +6,8 @@ import java.io.PrintWriter;
 import java.io.IOException;
 
 public class ChappServer {
-	public static final int VERSION_NUMBER = 1;
-	public static final int REVISION_NUMBER = 0;
+	public static final String VERSION_NUMBER = "0.1";
+	public static final String REVISION_NUMBER = "0";
 	public static final int PORT_NUMBER = 22222;
 
 	private static ServerSocket chatServer;
@@ -37,9 +37,22 @@ public class ChappServer {
 
 			//Waits for clients to connect
 			try {
-				login = chatServer.accept();
-				clientInput = new Scanner(login.getInputStream());
-				clientOutput = new PrintWriter(login.getOutputStream());
+				clientConnection = chatServer.accept();
+				clientInput = new Scanner(clientConnection.getInputStream());
+				clientOutput = new PrintWriter(clientConnection.getOutputStream());
+
+				// Make sure the client and server are running the same version number.
+				clientOutput.println(VERSION_NUMBER);
+				clientOutput.flush();
+				String clientVersion = clientInput.next();
+				if (!clientVersion.equals(VERSION_NUMBER)) {
+					System.out.println("Version numbers do not match!\nClient version: " + clientVersion);
+					clientConnection.close();
+					clientOutput.close();
+					clientInput.close();
+					System.out.println("Connection terminated!");
+					continue;
+				}
 
 				String username = clientInput.next();
 				System.out.println(username);
@@ -56,7 +69,7 @@ public class ChappServer {
 				System.out.println("Log in success!");
 				clientOutput.println("success");
 				clientOutput.flush();
-				login.close();
+				clientConnection.close();
 				clientInput.close();
 				clientOutput.close();
 			} catch (IOException e) {

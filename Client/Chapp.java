@@ -5,9 +5,6 @@ import javafx.scene.layout.*;
 import javafx.scene.control.*;
 
 public class Chapp extends Application {
-	public static final int VERSION_NUMBER = 1;
-	public static final int REVISION_NUMBER = 0;
-
 	private TextField usernameTF;
 	private PasswordField passwordTF;
 	private Label responseLbl;
@@ -20,8 +17,8 @@ public class Chapp extends Application {
 
 	public void start(Stage primaryStage) {
 		System.out.println("Chapp Client");
-		System.out.println("Version number: " + VERSION_NUMBER);
-		System.out.println("Revision number: " + REVISION_NUMBER);
+		System.out.println("Version number: " + ChatClient.VERSION_NUMBER);
+		System.out.println("Revision number: " + ChatClient.REVISION_NUMBER);
 
 		client = new ChatClient();
 

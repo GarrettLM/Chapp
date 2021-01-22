@@ -6,6 +6,8 @@ import java.io.IOException;
 
 /* This class is used to handle communication with the server. */
 public class ChatClient {
+	public static final String VERSION_NUMBER = "0.1";
+	public static final String REVISION_NUMBER = "0";
 	private static final int SERVER_PORT = 22222;
 
 	private InetAddress serverAddr;
@@ -20,6 +22,20 @@ public class ChatClient {
 			serverConnection = new Socket(serverAddr, SERVER_PORT);
 			output = new PrintWriter(serverConnection.getOutputStream());
 			input = new Scanner(serverConnection.getInputStream());
+
+			// Make sure the client and server are running the same version number.
+			output.println(VERSION_NUMBER);
+			output.flush();
+			String serverVersion = input.next();
+			if (!serverVersion.equals(VERSION_NUMBER)) {
+				System.out.println("Version numbers do not match!\nServer version: " + serverVersion);
+				serverConnection.close();
+				output.close();
+				input.close();
+				System.out.println("Connection terminated!\nShutting down...");
+				System.exit(0);
+			}
+
 		} catch (IOException e) {
 			System.out.println("e.getMessage()");
 		}
