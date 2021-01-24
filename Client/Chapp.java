@@ -5,13 +5,17 @@ import javafx.scene.layout.*;
 import javafx.scene.control.*;
 
 public class Chapp extends Application {
+	private static ChatClient client;
+
 	private TextField usernameTF;
 	private PasswordField passwordTF;
 	private Label responseLbl;
 	private Button loginBtn;
-	private ChatClient client;
 
 	public static void main(String[] args) {
+		if (args.length == 1) client = new ChatClient(args[0]);
+		else client = new ChatClient();
+
 		launch(args);
 	}
 
@@ -19,8 +23,6 @@ public class Chapp extends Application {
 		System.out.println("Chapp Client");
 		System.out.println("Version number: " + ChatClient.VERSION_NUMBER);
 		System.out.println("Revision number: " + ChatClient.REVISION_NUMBER);
-
-		client = new ChatClient();
 
 		Label usernameLbl = new Label("Username: ");
 		usernameTF = new TextField();
