@@ -1,6 +1,7 @@
 import java.util.Scanner;
 import java.io.PrintWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Hashtable;
 
@@ -56,7 +57,7 @@ class FileDatabaseConnection extends DatabaseConnection {
 	public boolean register(String username, String password) {
 		if (database.get(username) != null) return false;
 		try {
-			PrintWriter outputStream = new PrintWriter(new File(databaseFile));
+			PrintWriter outputStream = new PrintWriter(new FileOutputStream(databaseFile, true));
 			outputStream.println(username + " " + password);
 			outputStream.close();
 		} catch (IOException e) {
