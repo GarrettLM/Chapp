@@ -6,7 +6,7 @@ import java.io.IOException;
 
 /* This class is used to handle communication with the server. */
 public class ChatClient {
-	public static final String VERSION_NUMBER = "0.2";
+	public static final String VERSION_NUMBER = "0.3";
 	public static final String REVISION_NUMBER = "0";
 	private static final int SERVER_PORT = 22222;
 	private static ChatClient client;	//Uses the singleton pattern to make a single instance of the ChatClient class
@@ -80,15 +80,37 @@ public class ChatClient {
 
 	/*	Accepts a username and password pair to send to the server.
 		Returns true if the pair was accepted. */
-	public boolean login(String username, String password) {
+	public AccountMetaData login(String username, String password) {
 		output.println("login");
-		output.flush();
 		output.println(username);
-		output.flush();
 		output.println(password);
 		output.flush();
 		System.out.println("Waiting for response");
-		return (input.next().equals("success"));
+		String responseLine = "";
+		while (responseLine.equals(""))
+			responseLine = input.nextLine();
+		System.out.println(responseLine);
+		//String[] response = input.nextLine().split(" ");
+		String[] response = responseLine.split(" ");
+		if (!response[0].equals("success")) return null;
+		//Thread handler = new Thread(new ServerHandler(input));
+		//handler.start();
+		return new AccountMetaData(new Integer(response[1]), username);
+	}
+
+	public ChatRoomMetaData[] getRooms() {
+		output.println("user-info rooms");
+		output.flush();
+		String responseLine;
+		do {
+			responseLine = input.nextLine();
+		} while (responseLine.equals(""));
+		return ChatRoomMetaData.buildList(responseLine);
+	}
+
+	public void handleConnection() {
+		Thread handler = new Thread(new ServerHandler(input));
+		handler.start();
 	}
 
 	/*	Accepts a username and password pair to send to the server.
@@ -109,10 +131,61 @@ public class ChatClient {
 		try {
 			output.println("logout");
 			output.flush();
-			serverConnection.close();
+			//serverConnection.close();
+			//output.close();
+			//input.close();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
+	public void disconnect() {
+		try {
+			output.println("disconnect");
+			output.flush();
 			output.close();
 			input.close();
-		} catch (IOException e) {
+			serverConnection.close();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
+	/*public void run() {
+		try {
+			String next = input.nextLine();
+			while (!next.equals("logout")) {
+				next = input.nextLine();
+				WindowBridge.notify("default", next);
+			}
+			input.close();
+			serverConnection.close();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}*/
+	public void postMessage(String roomName, String message) {
+		//output.println(roomName);
+		output.println(message);
+		output.flush();
+	}
+}
+
+class ServerHandler implements Runnable {
+	private Scanner input;
+
+	public ServerHandler(Scanner input) {
+		this.input = input;
+	}
+
+	public void run() {
+		try {
+			String next = input.nextLine();
+			while (!next.equals("logout")) {
+				//WindowBridge.notify("default", next);
+				next = input.nextLine();
+			}
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 	}
