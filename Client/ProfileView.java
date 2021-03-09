@@ -7,12 +7,14 @@ import javafx.scene.control.TitledPane;
 import java.util.ArrayList;
 
 public class ProfileView {
+	private LoggedInView view;
 	private VBox pane;
 	private VBox rooms;
 	private VBox friends;
 	private UserProfile user;
 
-	public ProfileView() {
+	public ProfileView(LoggedInView view) {
+		this.view = view;
 		user = UserProfile.getUserProfile();
 		TextField usernameBox = new TextField(user.getData().getUsername());
 		usernameBox.setEditable(false);
@@ -27,7 +29,7 @@ public class ProfileView {
 		ArrayList<ChatRoomMetaData> roomList = user.getRoomList();
 		for (ChatRoomMetaData r : roomList) {
 			RoomButton btn = new RoomButton(r);
-			btn.setOnAction(e -> {ChatRoomProxy.enterRoom(((RoomButton)e.getSource()).getRoomID());});
+			btn.setOnAction(e -> {view.selectRoom(((RoomButton)e.getSource()).getRoomID());});
 			rooms.getChildren().add(btn);
 		}
 

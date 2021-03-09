@@ -61,7 +61,7 @@ public class ChatRoomServer {
 	}
 
 	public synchronized void post(String message) {
-		String dataMsg = "message\n" + roomID + "\n" + message;
+		String dataMsg = "message;" + roomID + ";" + message;
 		for (ConnectionHandler temp : members) {
 			try {
 				temp.sendMessage(dataMsg);

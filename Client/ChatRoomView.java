@@ -4,16 +4,16 @@ import javafx.scene.*;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
 
-public class ChatRoomView {
+public class ChatRoomView implements ChatProxyViewBridge {
 	private BorderPane pane;
 	private VBox chatView;
 	private TextField chatField;
 	private Button submitMessageBtn;
-	private Integer roomID;
+	//private Integer roomID;
 	private ChatRoomProxy proxy;
 
-	public ChatRoomView(Integer roomID) {
-		this.roomID = roomID;
+	public ChatRoomView(ChatRoomMetaData metaData) {
+		//this.roomID = roomID;
 		pane = new BorderPane();
 		chatView = new VBox();
 		pane.setCenter(chatView);
@@ -22,6 +22,12 @@ public class ChatRoomView {
 		submitMessageBtn.setOnAction(e -> sendMessage());
 		HBox chatInput = new HBox(chatField, submitMessageBtn);
 		pane.setBottom(chatInput);
+		proxy = ChatRoomProxy.enterRoom(metaData);
+	}
+
+	public void enterRoom() {
+		proxy.setView(this);
+		proxy.enterRoom();
 	}
 
 	public void sendMessage() {

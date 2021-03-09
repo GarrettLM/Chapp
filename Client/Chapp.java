@@ -44,4 +44,8 @@ public class Chapp extends Application {
 		ChatClient.getChatClient().disconnect();
 		stage.close();
 	}
+
+	public void setTitle(String title) {
+		stage.setTitle(title);
+	}
 }

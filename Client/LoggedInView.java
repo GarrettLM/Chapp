@@ -12,24 +12,25 @@ public class LoggedInView {
 	private Hashtable<Integer, ChatRoomView> roomViews;
 
 	public LoggedInView() {
-		profileView = new ProfileView();
+		profileView = new ProfileView(this);
 		pane = new HBox(profileView.getPane());
 		roomViews = new Hashtable<Integer, ChatRoomView>();
 	}
 
-	/*public void setRoomView(Integer roomID) {
-		ChatRoomView room = roomViews.get(Integer);
+	public void selectRoom(Integer roomID) {
+		ChatRoomView room = roomViews.get(roomID);
+		ChatRoomMetaData metaData = ChatRoomMetaData.getRoomMetaData(roomID);
 		if (room == null) {
-			room = new ChatRoomView(roomID);
-			String roomName = roomID.toString();
-			Button roomButton = new Button(roomName);
-			roomButton.setOnAction(e -> setRoomView(Integer(roomButton.getText())));
-			rooms.getChildren().add(roomButton);
+			room = new ChatRoomView(metaData);
+			roomViews.put(metaData.getRoomID(), room);
+			room.enterRoom();
 		}
-		if (current != null) pane.getChildren().remove(currentRoom.getPane());
+		if (currentRoom != null) pane.getChildren().remove(currentRoom.getPane());
 		currentRoom = room;
+		String roomName = metaData.getRoomName();
+		Chapp.getChapp().setTitle(roomName);
 		pane.getChildren().add(room.getPane());
-	}*/
+	}
 
 	public Pane getPane() { return pane; }
 }

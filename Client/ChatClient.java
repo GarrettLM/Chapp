@@ -32,12 +32,11 @@ public class ChatClient {
 		try {
 			serverAddr = InetAddress.getLocalHost();
 			serverConnection = new Socket(serverAddr, SERVER_PORT);
-			output = new PrintWriter(serverConnection.getOutputStream());
+			output = new PrintWriter(serverConnection.getOutputStream(), true);
 			input = new Scanner(serverConnection.getInputStream());
 
 			// Make sure the client and server are running the same version number.
 			output.println(VERSION_NUMBER);
-			output.flush();
 			String serverVersion = input.next();
 			if (!serverVersion.equals(VERSION_NUMBER)) {
 				System.out.println("Version numbers do not match!\nServer version: " + serverVersion);
@@ -57,12 +56,11 @@ public class ChatClient {
 		try {
 			serverAddr = InetAddress.getByName(serverIPAddress);
 			serverConnection = new Socket(serverAddr, SERVER_PORT);
-			output = new PrintWriter(serverConnection.getOutputStream());
+			output = new PrintWriter(serverConnection.getOutputStream(), true);
 			input = new Scanner(serverConnection.getInputStream());
 
 			// Make sure the client and server are running the same version number.
-			output.println(VERSION_NUMBER);
-			output.flush();
+			send(VERSION_NUMBER);
 			String serverVersion = input.next();
 			if (!serverVersion.equals(VERSION_NUMBER)) {
 				System.out.println("Version numbers do not match!\nServer version: " + serverVersion);
@@ -81,10 +79,7 @@ public class ChatClient {
 	/*	Accepts a username and password pair to send to the server.
 		Returns true if the pair was accepted. */
 	public AccountMetaData login(String username, String password) {
-		output.println("login");
-		output.println(username);
-		output.println(password);
-		output.flush();
+		send("login " + username + " " + password);
 		System.out.println("Waiting for response");
 		String responseLine = "";
 		while (responseLine.equals(""))
@@ -116,19 +111,15 @@ public class ChatClient {
 	/*	Accepts a username and password pair to send to the server.
 		Returns true if the pair was accepted. */
 	public boolean register(String username, String password) {
-		output.println("register");
-		output.flush();
-		output.println(username);
-		output.flush();
-		output.println(password);
-		output.flush();
+		send("register " + username + " " + password);
 		System.out.println("Waiting for response");
 		return (input.next().equals("success"));
 	}
 
 	/* Logs the client out of the chat room and shuts down the connection with the server. */
 	public void logout() {
-		try {
+		send("logout");
+		/*try {
 			output.println("logout");
 			output.flush();
 			//serverConnection.close();
@@ -136,12 +127,12 @@ public class ChatClient {
 			//input.close();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-		}
+		}*/
 	}
 
 	public void disconnect() {
+		send("disconnet");
 		try {
-			output.println("disconnect");
 			output.flush();
 			output.close();
 			input.close();
@@ -151,23 +142,20 @@ public class ChatClient {
 		}
 	}
 
-	/*public void run() {
+	public void enterRoom(Integer roomID) {
+		send("enter " + roomID.toString());
+	}
+
+	public void sendMessage(Integer roomID, String message) {
+		send("message " + roomID.toString() + " " + message);
+	}
+
+	private void send(String message) {
 		try {
-			String next = input.nextLine();
-			while (!next.equals("logout")) {
-				next = input.nextLine();
-				WindowBridge.notify("default", next);
-			}
-			input.close();
-			serverConnection.close();
+			output.println(message);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
-	}*/
-	public void postMessage(String roomName, String message) {
-		//output.println(roomName);
-		output.println(message);
-		output.flush();
 	}
 }
 
@@ -182,6 +170,13 @@ class ServerHandler implements Runnable {
 		try {
 			String next = input.nextLine();
 			while (!next.equals("logout")) {
+				String[] line = next.split(";");
+				switch (line[0]) {
+					case "message":
+						ChatRoomProxy proxy = ChatRoomProxy.getChatRoomProxy(new Integer(line[1]));
+						proxy.recieveMessage(line[2]);
+						break;
+				}
 				//WindowBridge.notify("default", next);
 				next = input.nextLine();
 			}

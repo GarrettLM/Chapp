@@ -142,7 +142,7 @@ public class ConnectionHandler extends Thread {
 	private void messageRoom() {
 		Integer roomID = new Integer(clientInput.next());
 		String message = clientInput.nextLine();
-		rooms.get(roomID).post(userID + "\n" + message);
+		rooms.get(roomID).post(userID + ":" + message);
 	}
 
 	private void createRoom(){}
