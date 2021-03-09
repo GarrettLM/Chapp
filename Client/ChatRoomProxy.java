@@ -24,7 +24,7 @@ public class ChatRoomProxy {
 	}
 
 	public void recieveMessage(String message) {
-		//view.displayMessage(message);
+		view.displayMessage(message);
 		System.out.println(message);
 	}
 

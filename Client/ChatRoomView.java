@@ -39,7 +39,11 @@ public class ChatRoomView implements ChatProxyViewBridge {
 	}
 
 	public void displayMessage(String message) {
-		chatView.getChildren().add(new Label(message));
+		Platform.runLater(new Runnable() {
+			public void run() {
+		 		chatView.getChildren().add(new Label(message));
+		 	}
+		});
 	}
 
 	public Pane getPane() { return pane; }
