@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import java.sql.*;
+
 /* An abstract wrapper class for database connections. */
 abstract class DatabaseConnection {
 	public abstract Integer login(String username, String password);
@@ -13,7 +15,11 @@ abstract class DatabaseConnection {
 	public abstract String getRoomList();
 
 	public static DatabaseConnection makeConnection() {
-		return new FileDatabaseConnection();
+		String jdbcDriver = Configuration.getConfiguration("JDBC-driver");
+		String url = Configuration.getConfiguration("Database-url");
+		String username = Configuration.getConfiguration("Database-username");
+		String password = Configuration.getConfiguration("Database-password");
+		return new JDBCDatabaseConnection(jdbcDriver, url, username, password);
 	}
 }
 
@@ -82,4 +88,42 @@ class FileDatabaseConnection extends DatabaseConnection {
 	}
 
 	public String getRoomList() { return "1;default;2;coolroom"; }
+}
+
+class JDBCDatabaseConnection extends DatabaseConnection {
+	private Connection database;
+
+	public JDBCDatabaseConnection(String jdbcDriver, String databaseURL, String username, String password) {
+		try {
+			System.out.println("Getting driver");
+			//Class.forName(jdbcDriver);
+			System.out.println("Setting up database connection");
+			database = DriverManager.getConnection(databaseURL, username, password);
+			System.out.println("Connected to database");
+		} catch (Exception e) {
+			System.out.println(e.toString());
+			System.exit(1);
+		}
+	}
+
+	public Integer login(String username, String password) {
+		try {
+			String sql = "SELECT * FROM users WHERE username='" + username + "';";
+			Statement stmt = database.createStatement();
+			ResultSet results = stmt.executeQuery(sql);
+			if (!results.next() || !password.equals(results.getString("password"))) return null;
+			return new Integer(results.getInt("userid"));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			System.exit(1);
+		}
+		return null;
+	}
+
+	public boolean register(String username, String password) {
+		String sql = "INSERT INTO users(username, password) VALUES('" + username + "', '" + password + "');";
+		return false;
+	}
+
+	public String getRoomList() { return "1;default"; }
 }

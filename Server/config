@@ -1,3 +1,10 @@
 Version-number: 0.3
 Revision-number: 0
 Port-number: 22222
+
+;Information to configure the database connection
+;JDBC-driver: com.mysql.jdbc.Driver
+JDBC-driver: mysql-connector-java
+Database-username: root
+Database-password: pass
+Database-url: jdbc:mysql://localhost/chapp
