@@ -65,7 +65,7 @@ public class ConnectionHandler extends Thread {
 		System.out.println("Log in success!");
 		sendMessage("success " + userID);
 		while (clientInput.nextLine().equals(""));
-		sendMessage(database.getRoomList());
+		sendMessage(database.getRoomList(userID));
 		return true;
 	}
 

@@ -12,7 +12,7 @@ import java.sql.*;
 abstract class DatabaseConnection {
 	public abstract Integer login(String username, String password);
 	public abstract boolean register(String username, String password);
-	public abstract String getRoomList();
+	public abstract String getRoomList(Integer userid);
 
 	public static DatabaseConnection makeConnection() {
 		String jdbcDriver = Configuration.getConfiguration("JDBC-driver");
@@ -87,7 +87,7 @@ class FileDatabaseConnection extends DatabaseConnection {
 		return true;
 	}
 
-	public String getRoomList() { return "1;default;2;coolroom"; }
+	public String getRoomList(Integer userid) { return "1;default;2;coolroom"; }
 }
 
 class JDBCDatabaseConnection extends DatabaseConnection {
@@ -135,5 +135,22 @@ class JDBCDatabaseConnection extends DatabaseConnection {
 		return false;
 	}
 
-	public String getRoomList() { return "1;default"; }
+	public String getRoomList(Integer userid) {
+		try {
+			String sql = "SELECT rooms.roomid, rooms.roomname FROM roommembers, rooms WHERE roommembers.userid='"
+				+ userid.toString() + "' AND roommembers.roomid=rooms.roomid;";
+			Statement stmt = database.createStatement();
+			ResultSet results = stmt.executeQuery(sql);
+			String roomlist = "";
+			while (results.next()) {
+				roomlist = roomlist + results.getInt("roomid") + ";" + results.getString("roomname") + ";";
+				System.out.println(roomlist);
+			}
+			if (roomlist.equals("")) return ";";
+			return roomlist;
+		} catch (Exception e) {
+			System.out.println(e.toString());
+		}	
+		return "1;default;";
+	}
 }

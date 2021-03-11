@@ -131,7 +131,7 @@ public class ChatClient {
 	}
 
 	public void disconnect() {
-		send("disconnet");
+		send("disconnect");
 		try {
 			output.flush();
 			output.close();
