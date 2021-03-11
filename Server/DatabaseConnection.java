@@ -114,14 +114,24 @@ class JDBCDatabaseConnection extends DatabaseConnection {
 			if (!results.next() || !password.equals(results.getString("password"))) return null;
 			return new Integer(results.getInt("userid"));
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			System.out.println(e.toString());
 			System.exit(1);
 		}
 		return null;
 	}
 
 	public boolean register(String username, String password) {
-		String sql = "INSERT INTO users(username, password) VALUES('" + username + "', '" + password + "');";
+		try {
+			String sql = "SELECT * FROM users WHERE username='" + username + "';";
+			Statement stmt = database.createStatement();
+			ResultSet results = stmt.executeQuery(sql);
+			if (results.next()) return false;
+			sql = "INSERT INTO users(username, password) VALUES('" + username + "', '" + password + "');";
+			stmt.executeUpdate(sql);
+			return true;
+		} catch (Exception e) {
+			System.out.println(e.toString());
+		}
 		return false;
 	}
 
