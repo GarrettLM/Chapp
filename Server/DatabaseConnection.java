@@ -13,6 +13,7 @@ abstract class DatabaseConnection {
 	public abstract Integer login(String username, String password);
 	public abstract boolean register(String username, String password);
 	public abstract String getRoomList(Integer userid);
+	public abstract String getFriendList(Integer userid);
 
 	public static DatabaseConnection makeConnection() {
 		String jdbcDriver = Configuration.getConfiguration("JDBC-driver");
@@ -88,6 +89,7 @@ class FileDatabaseConnection extends DatabaseConnection {
 	}
 
 	public String getRoomList(Integer userid) { return "1;default;2;coolroom"; }
+	public String getFriendList(Integer userid) { return ";"; };
 }
 
 class JDBCDatabaseConnection extends DatabaseConnection {
@@ -152,5 +154,31 @@ class JDBCDatabaseConnection extends DatabaseConnection {
 			System.out.println(e.toString());
 		}	
 		return "1;default;";
+	}
+
+	public String getFriendList(Integer userid) {
+		try {
+			String sql = "SELECT users.userid, users.username FROM friends, users WHERE friends.firstuserid='"
+				+ userid.toString() + "' AND friends.seconduserid=users.userid;";
+			Statement stmt = database.createStatement();
+			ResultSet results = stmt.executeQuery(sql);
+			String friendlist = "";
+			while (results.next()) {
+				friendlist = friendlist + results.getInt("userid") + ";" + results.getString("username") + ";";
+				//System.out.println(roomlist);
+			}
+			sql = "SELECT users.userid, users.username FROM friends, users WHERE friends.seconduserid='"
+				+ userid.toString() + "' AND friends.firstuserid=users.userid;";
+			results = stmt.executeQuery(sql);
+			while (results.next()) {
+				friendlist = friendlist + results.getInt("userid") + ";" + results.getString("username") + ";";
+				//System.out.println(roomlist);
+			}
+			if (friendlist.equals("")) return ";";
+			return friendlist;
+		} catch (Exception e) {
+			System.out.println(e.toString());
+		}	
+		return ";";
 	}
 }

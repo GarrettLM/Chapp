@@ -5,11 +5,12 @@ public class UserProfile {
 
 	private AccountMetaData data;
 	private ArrayList<ChatRoomMetaData> rooms;
-	//private ArrayList<AccountMetaData> friends;
+	private ArrayList<AccountMetaData> friends;
 
 	private UserProfile(AccountMetaData data) {
 		this.data = data;
 		rooms = new ArrayList<ChatRoomMetaData>();
+		friends = new ArrayList<AccountMetaData>();
 	}
 
 	public AccountMetaData getData() { return data; }
@@ -18,9 +19,15 @@ public class UserProfile {
 		for (int i = 0; i < list.length; i++) rooms.add(list[i]);
 	}
 
+	public void setFriendList(AccountMetaData[] list) {
+		for (int i = 0; i < list.length; i++) friends.add(list[i]);
+	}
+
 	public ArrayList<ChatRoomMetaData> getRoomList() {
 		return rooms;
 	}
+
+	public ArrayList<AccountMetaData> getFriendList() { return friends; }
 
 	public boolean changeUsername(String newUsername) {
 		return false;
@@ -42,6 +49,7 @@ public class UserProfile {
 		AccountMetaData.register(data);
 		user = new UserProfile(data);
 		user.setRoomList(client.getRooms());
+		user.setFriendList(client.getFriends());
 		client.handleConnection();
 		return user;
 	}

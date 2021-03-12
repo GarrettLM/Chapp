@@ -66,6 +66,7 @@ public class ConnectionHandler extends Thread {
 		sendMessage("success " + userID);
 		while (clientInput.nextLine().equals(""));
 		sendMessage(database.getRoomList(userID));
+		sendMessage(database.getFriendList(userID));
 		return true;
 	}
 

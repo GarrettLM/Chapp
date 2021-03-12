@@ -33,6 +33,13 @@ public class ProfileView {
 			rooms.getChildren().add(btn);
 		}
 
+		ArrayList<AccountMetaData> friendList = user.getFriendList();
+		for (AccountMetaData f : friendList) {
+			Button lbl = new Button(f.getUsername());
+			//btn.setOnAction(e -> {view.selectRoom(((RoomButton)e.getSource()).getRoomID());});
+			friends.getChildren().add(lbl);
+		}
+
 		pane = new VBox(profileBox, roomsPane, friendsPane);		
 	}
 

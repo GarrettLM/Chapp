@@ -103,6 +103,16 @@ public class ChatClient {
 		return ChatRoomMetaData.buildList(responseLine);
 	}
 
+	public AccountMetaData[] getFriends() {
+		output.println("user-info friends");
+		output.flush();
+		String responseLine;
+		do {
+			responseLine = input.nextLine();
+		} while (responseLine.equals(""));
+		return AccountMetaData.buildList(responseLine);
+	}
+
 	public void handleConnection() {
 		Thread handler = new Thread(new ServerHandler(input));
 		handler.start();
